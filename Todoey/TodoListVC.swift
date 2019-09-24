@@ -15,7 +15,7 @@ import UIKit
 class TodoListVC: UITableViewController {
     
     // sample items to use for now
-    let itemArray = ["Find Mike", "Buy Eggos", "Destroy Demogorgon",]
+    var itemArray = ["Find Mike", "Buy Eggos", "Destroy Demogorgon",]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -71,5 +71,38 @@ class TodoListVC: UITableViewController {
     
     /// /// ///
     
+    
+    /// - Add New Items
+    //MARK: - Add New Items
+    
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        
+        //setup local var to save user's input inside
+        //and share with other methods in this function
+        var textField = UITextField()
+        
+        // create an alert item
+        let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
+        
+        // this is a method to confirm the action (whatever we do with the alert)
+        let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
+            // what will happen when user clicks the add item button on the alert
+            self.itemArray.append(textField.text!)
+        }
+        
+        // add a textfield into the alert to be able to write new items
+        alert.addTextField { (alertTextFiled) in
+            alertTextFiled.placeholder = "Create New Item"
+            textField = alertTextFiled
+        }
+        
+        // add action in alerrt
+        alert.addAction(action)
+        // make alert apear on screen
+        present(alert, animated: true, completion: nil)
+        
+    }
+    
+    /// /// ///
 }
 
