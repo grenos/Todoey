@@ -23,6 +23,30 @@ class TodoListVC: UITableViewController {
     }
     
     
+    /// - TableView Delegate Methods
+    //MARK: - TableView Delegate Methods
+
+    ///ui methods
+    // do something when a row is tapped
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        // removes the grey background from a selected row
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        // get current tapped row
+        let tappedRow = tableView.cellForRow(at: indexPath)
+        // check if has checkmark and add or remove acordingly
+        if tappedRow?.accessoryType == .checkmark {
+            tableView.cellForRow(at: indexPath)?.accessoryType = .none
+        } else {
+            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
+        }
+    }
+    
+    /// /// ///
+    
+    
+    
     
     /// - Tableview Datasource Methods
     //MARK: - Tableview Datasource Methods
@@ -41,9 +65,11 @@ class TodoListVC: UITableViewController {
         //set the inner text of each cell
         // selecting each item of the array by passing the current index of the row
         cell.textLabel?.text = itemArray[indexPath.row]
-        
+        //return the cell back to the tableView
         return cell
     }
-
+    
+    /// /// ///
+    
 }
 
