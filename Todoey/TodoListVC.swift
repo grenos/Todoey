@@ -23,10 +23,10 @@ class TodoListVC: UITableViewController {
     }
     
     
-    /// - TableView Delegate Methods
-    //MARK: - TableView Delegate Methods
+    /// - TableView Delegate Methods (append cell to rows)
+    //MARK: - TableView Delegate Methods (append cell to rows)
 
-    ///ui methods
+    //ui methods
     // do something when a row is tapped
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
@@ -42,14 +42,13 @@ class TodoListVC: UITableViewController {
             tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
         }
     }
-    
     /// /// ///
     
     
     
     
-    /// - Tableview Datasource Methods
-    //MARK: - Tableview Datasource Methods
+    /// - Tableview Datasource Methods (cell)
+    //MARK: - Tableview Datasource Methods (cell)
     
     // set the number of rows in table
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -68,12 +67,14 @@ class TodoListVC: UITableViewController {
         //return the cell back to the tableView
         return cell
     }
-    
     /// /// ///
     
     
-    /// - Add New Items
-    //MARK: - Add New Items
+    
+    
+    
+    /// - Add New Items (+alert)
+    //MARK: - Add New Items (+alert)
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         
@@ -88,6 +89,8 @@ class TodoListVC: UITableViewController {
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             // what will happen when user clicks the add item button on the alert
             self.itemArray.append(textField.text!)
+            // make tableView to re-print the screen with new data
+            self.tableView.reloadData()
         }
         
         // add a textfield into the alert to be able to write new items
@@ -102,7 +105,6 @@ class TodoListVC: UITableViewController {
         present(alert, animated: true, completion: nil)
         
     }
-    
     /// /// ///
 }
 
