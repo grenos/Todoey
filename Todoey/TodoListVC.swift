@@ -15,12 +15,22 @@ import UIKit
 class TodoListVC: UITableViewController {
     
     // sample items to use for now
-    var itemArray = ["Find Mike", "Buy Eggos", "Destroy Demogorgon",]
+    var itemArray = ["Find Mike", "Buy Eggos", "Destroy Demogorgon"]
+    
+    // An interface to the user’s defaults database,
+    // where you store key-value pairs persistently across launches of your app.
+    let defaults = UserDefaults.standard
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // we check if array exists in local storage
+        // if yes we use it as the source to populate the cells of the tableView
+        if let items = defaults.array(forKey: "TodoListArray") as? [String] {
+            itemArray = items
+        }
     }
+    
     
     
     /// - TableView Delegate Methods (append cell to rows)
@@ -89,6 +99,8 @@ class TodoListVC: UITableViewController {
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             // what will happen when user clicks the add item button on the alert
             self.itemArray.append(textField.text!)
+            // save our updated todo array in the local storage
+            self.defaults.set(self.itemArray, forKey: "TodoListArray")
             // make tableView to re-print the screen with new data
             self.tableView.reloadData()
         }
