@@ -21,6 +21,8 @@ class TodoListVC: UITableViewController {
     // where you store key-value pairs persistently across launches of your app.
     let defaults = UserDefaults.standard
 
+    /// viewDidLoad()
+    //MARK: - viewDidLoad()
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -30,7 +32,7 @@ class TodoListVC: UITableViewController {
             itemArray = items
         }
     }
-    
+    /// /// ///
     
     
     /// - TableView Delegate Methods (append cell to rows)
