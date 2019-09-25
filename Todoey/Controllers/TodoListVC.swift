@@ -17,56 +17,45 @@ class TodoListVC: UITableViewController {
     // sample items to use for now
     var itemArray = [Item]()
     
-    // An interface to the user’s defaults database,
-    // where you store key-value pairs persistently across launches of your app.
-    let defaults = UserDefaults.standard
-
+    // crete a file path to the device's document folder
+    // and later create a plist file where we will save our custom array
+    // we do this because on UserDefaults we can only save primitive values
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+    
     
     /// viewDidLoad()
     //MARK: - viewDidLoad()
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-        let newItem = Item()
-        newItem.title = "Find Mike"
-        itemArray.append(newItem)
-        
-        let newItem1 = Item()
-        newItem1.title = "Buy Eggos"
-        itemArray.append(newItem1)
-        
-        
-        // we check if array exists in local storage
-        // if yes we use it as the source to populate the cells of the tableView
-        if let items = defaults.array(forKey: "TodoListArray") as? [Item] {
-            itemArray = items
-        }
+        // calls the method that decodes the plist file from documents
+        loadItems()
     }
     /// /// ///
     
     
     
     
-    /// - TableView Delegate Methods (tableView UI)
-    //MARK: - TableView Delegate Methods (tableView UI)
+    
+    /// - TableView Delegate Methods (tableView UI - onTap)
+    //MARK: - TableView Delegate Methods (tableView UI - onTap)
 
     //ui methods
     // do something when a row is tapped
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         // on cell tap toggles the done property of the item object
         // if true then false ecc
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
-        
+        // save the array to the plist file after
+        // we have made any changes to the done property of the object
+        saveItems()
+        // make tableView to re-print the screen with new data
+        tableView.reloadData()
         // removes the grey background from a selected row
         tableView.deselectRow(at: indexPath, animated: true)
-        
-        // update tableView with latest "state" changes after the tap
-        tableView.reloadData()
-        
     }
     /// /// ///
+    
     
     
     
@@ -123,8 +112,9 @@ class TodoListVC: UITableViewController {
             let newItem = Item()
             newItem.title = textField.text!
             self.itemArray.append(newItem)
-            // save our updated todo array in the local storage
-            self.defaults.set(self.itemArray, forKey: "TodoListArray")
+            // call method that creates and saves itemArray on the plist
+            self.saveItems()
+            
             // make tableView to re-print the screen with new data
             self.tableView.reloadData()
         }
@@ -142,5 +132,49 @@ class TodoListVC: UITableViewController {
         
     }
     /// /// ///
+    
+    
+    
+    
+    
+    /// - Model Manipulation Methods
+    //MARK: - Model Manipulation methods
+    
+    func saveItems() {
+        // An object that encodes instances of data types to a property list.
+        let encoder = PropertyListEncoder()
+        
+        do {
+            // we encode the itemArray for the plist
+            let data = try encoder.encode(itemArray)
+            // we write the plist to our documents' folder
+            try data.write(to: dataFilePath!)
+        } catch {
+            print("Error encoding item array \(error)")
+        }
+    }
+    
+    
+    func loadItems() {
+        // access the data we have saved on our device
+        if let data = try? Data(contentsOf: dataFilePath!) {
+            // An object that decodes instances of data types to a property list.
+            let decoder = PropertyListDecoder()
+            do {
+                // decode the plist and populate the itemArray (which is empty)
+                // we write [Item].self as the type of the "thing" we want to retrieve
+                itemArray = try decoder.decode([Item].self, from: data)
+            } catch {
+                print("Error decoding data \(error)")
+            }
+        }
+    }
+    /// /// ///
+    
+    
+    
+    
+    
+    
 }
 

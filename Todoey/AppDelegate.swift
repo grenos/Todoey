@@ -19,8 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
          /// THIS GETS CALLED WHEN EVER THE APP IS FIRST LOADED UP
         // Override point for customization after application launch.
         
-        //print(NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).last! as String)
-        
+    
         return true
     }
 
