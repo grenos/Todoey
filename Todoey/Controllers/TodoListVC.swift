@@ -14,7 +14,6 @@ import CoreData
 // because obviously our class is inheriting all of table view controller's attributes
 class TodoListVC: UITableViewController {
     
-    // sample items to use for now
     var itemArray = [Item]()
     
     // CORE DATA

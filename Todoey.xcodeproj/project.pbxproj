@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		187650FA233CC0400017722C /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 187650F8233CC0400017722C /* DataModel.xcdatamodeld */; };
+		1876511D233CF9D00017722C /* CategoryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1876511C233CF9D00017722C /* CategoryVC.swift */; };
 		18D7B54C233A48BE0034737A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D7B54B233A48BE0034737A /* AppDelegate.swift */; };
 		18D7B54E233A48BF0034737A /* TodoListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D7B54D233A48BF0034737A /* TodoListVC.swift */; };
 		18D7B551233A48BF0034737A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18D7B54F233A48BF0034737A /* Main.storyboard */; };
@@ -17,6 +18,7 @@
 
 /* Begin PBXFileReference section */
 		187650F9233CC0400017722C /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
+		1876511C233CF9D00017722C /* CategoryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryVC.swift; sourceTree = "<group>"; };
 		18D7B548233A48BE0034737A /* Todoey.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Todoey.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		18D7B54B233A48BE0034737A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		18D7B54D233A48BF0034737A /* TodoListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoListVC.swift; sourceTree = "<group>"; };
@@ -77,6 +79,7 @@
 		18D7B560233B74580034737A /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				1876511C233CF9D00017722C /* CategoryVC.swift */,
 				18D7B54D233A48BF0034737A /* TodoListVC.swift */,
 			);
 			path = Controllers;
@@ -172,6 +175,7 @@
 			files = (
 				18D7B54E233A48BF0034737A /* TodoListVC.swift in Sources */,
 				187650FA233CC0400017722C /* DataModel.xcdatamodeld in Sources */,
+				1876511D233CF9D00017722C /* CategoryVC.swift in Sources */,
 				18D7B54C233A48BE0034737A /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
