@@ -36,10 +36,6 @@ class TodoListVC: UITableViewController {
         // calls the method that decodes the plist file from documents
         loadItems()
         
-        
-        print(
-            FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        )
     }
     /// /// ///
     
@@ -57,9 +53,12 @@ class TodoListVC: UITableViewController {
         // if true then false ecc
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
+        ///UPDATE DATA
+        //itemArray[indexPath.row].setValue("Completed Maybe?", forKey: "Title")
         
-///        contextState.delete(itemArray[indexPath.row])
-///        itemArray.remove(at: indexPath.row)
+        ///DELETE DATA
+        //contextState.delete(itemArray[indexPath.row])
+        //itemArray.remove(at: indexPath.row)
         
         // save the array to the plist file after
         // we have made any changes to the done property of the object
@@ -154,8 +153,8 @@ class TodoListVC: UITableViewController {
     
     
     
-    /// - Model Manipulation Methods
-    //MARK: - Model Manipulation methods
+    /// - Model Manipulation Methods (db calls)
+    //MARK: - Model Manipulation methods (db calls)
     
     func saveItems() {
         do {
@@ -167,14 +166,14 @@ class TodoListVC: UITableViewController {
     }
     
     
-    func loadItems() {
-        // create a new request from the Item class
-        // and specify the type
-        let request : NSFetchRequest<Item> = Item.fetchRequest()
-        
+    // we pass the request arg so we can re-use
+    // we also provide a default in case we call loadItems() but dont pass an arg
+    // like we do at the viewDidLoad() method
+    func loadItems(request: NSFetchRequest<Item> = Item.fetchRequest()) {
         // make a fetch request with a fetch call
         // from context so we can read the data
         // passing the rquest we created above
+        
         do {
             // the fetch call return an array of objects
             // that we then save in our itemsArray
@@ -183,15 +182,61 @@ class TodoListVC: UITableViewController {
             print("Error requesting data \(error)")
         }
         
-        
-        
+        //re-print table view once we have all the fetched data
+        tableView.reloadData()
     }
     /// /// ///
     
     
+}
+
+
+
+/// EXTENSIONS
+
+//MARK: - Search bar methods
+extension TodoListVC: UISearchBarDelegate {
     
+    // method is going to be triggered once the user
+    // clicks the search button on the search bar
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        //query our database
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        //we use the NSPredicate method to query our database
+        //format: title CONTAINS[cd] %@ --> https://academy.realm.io/posts/nspredicate-cheatsheet/
+        //arg: argument is the value we provide to search
+        let myPredicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        // set the predicate for the request as our predicate
+        request.predicate = myPredicate
+        // declare sortDescriptor method to sort our returned data
+        let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
+        // set the sortDescriptor for the request as our sortDescriptor
+        request.sortDescriptors = [sortDescriptor]
+        
+        // call function that makes the actual request
+        loadItems(request: request)
+    }
+    
+    
+    // listen for changes in the text bar
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        // if searchBar is empty
+        if searchBar.text?.count == 0 {
+            // call load items without any specific param
+            // so it returns the entire db
+            loadItems()
+            
+            /// DISPATCH MANAGER
+            // assigns the tasks and proccesses to diferent threads
+            // main == main thread (where all UI tasks should be)
+            DispatchQueue.main.async {
+                // put searchbar out of focus i.e. -->
+                // close the keyboard unFocus search bar
+                searchBar.resignFirstResponder()
+            }
+        }
+    }
     
     
     
 }
-
