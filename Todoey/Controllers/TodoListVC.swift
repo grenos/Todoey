@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import CoreData
 
 // by subclassing this todolist class to the table view controller
 // we dont need to set it as a delegate and do any of the setup
@@ -17,10 +17,15 @@ class TodoListVC: UITableViewController {
     // sample items to use for now
     var itemArray = [Item]()
     
-    // crete a file path to the device's document folder
-    // and later create a plist file where we will save our custom array
-    // we do this because on UserDefaults we can only save primitive values
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+    // CORE DATA
+    // we grab a reference of the persistentContainer's context
+    // where we save the data (think redux store/state)
+    // CONTEXT is like an action/reducer -->
+    // pass the information of what we want to change -->
+    // to the database(persistentContainer)
+    let contextState = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+
+    
     
     
     /// viewDidLoad()
@@ -30,6 +35,11 @@ class TodoListVC: UITableViewController {
         
         // calls the method that decodes the plist file from documents
         loadItems()
+        
+        
+        print(
+            FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        )
     }
     /// /// ///
     
@@ -46,6 +56,11 @@ class TodoListVC: UITableViewController {
         // on cell tap toggles the done property of the item object
         // if true then false ecc
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
+        
+        
+///        contextState.delete(itemArray[indexPath.row])
+///        itemArray.remove(at: indexPath.row)
+        
         // save the array to the plist file after
         // we have made any changes to the done property of the object
         saveItems()
@@ -107,10 +122,12 @@ class TodoListVC: UITableViewController {
         // this is a method to confirm the action (whatever we do with the alert)
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             // what will happen when user clicks the add item button on the alert
-            // we create a new Item object and we pass the value of the text input
-            // as the title property of the object, then we push it on out itemsArray
-            let newItem = Item()
+            
+            // we grab contextState from the global var
+            // we init an object from the Item class to save out data in
+            let newItem = Item(context: self.contextState)
             newItem.title = textField.text!
+            newItem.done = false
             self.itemArray.append(newItem)
             // call method that creates and saves itemArray on the plist
             self.saveItems()
@@ -141,33 +158,33 @@ class TodoListVC: UITableViewController {
     //MARK: - Model Manipulation methods
     
     func saveItems() {
-        // An object that encodes instances of data types to a property list.
-        let encoder = PropertyListEncoder()
-        
         do {
-            // we encode the itemArray for the plist
-            let data = try encoder.encode(itemArray)
-            // we write the plist to our documents' folder
-            try data.write(to: dataFilePath!)
+            // save data to cntext (think store/state)
+            try contextState.save()
         } catch {
-            print("Error encoding item array \(error)")
+            print("Error saving context \(error)")
         }
     }
     
     
     func loadItems() {
-        // access the data we have saved on our device
-        if let data = try? Data(contentsOf: dataFilePath!) {
-            // An object that decodes instances of data types to a property list.
-            let decoder = PropertyListDecoder()
-            do {
-                // decode the plist and populate the itemArray (which is empty)
-                // we write [Item].self as the type of the "thing" we want to retrieve
-                itemArray = try decoder.decode([Item].self, from: data)
-            } catch {
-                print("Error decoding data \(error)")
-            }
+        // create a new request from the Item class
+        // and specify the type
+        let request : NSFetchRequest<Item> = Item.fetchRequest()
+        
+        // make a fetch request with a fetch call
+        // from context so we can read the data
+        // passing the rquest we created above
+        do {
+            // the fetch call return an array of objects
+            // that we then save in our itemsArray
+            itemArray = try contextState.fetch(request)
+        } catch {
+            print("Error requesting data \(error)")
         }
+        
+        
+        
     }
     /// /// ///
     
