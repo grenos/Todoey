@@ -16,6 +16,15 @@ class TodoListVC: UITableViewController {
     
     var itemArray = [Item]()
     
+    // call loadItems() only if selectedCategory has a value
+    // otherwise it will crash the app
+    var selectedCategory : Category? {
+        didSet{
+            loadItems()
+        }
+    }
+    
+    
     // CORE DATA
     // we grab a reference of the persistentContainer's context
     // where we save the data (think redux store/state)
@@ -26,15 +35,12 @@ class TodoListVC: UITableViewController {
 
     
     
-    
+
     /// viewDidLoad()
     //MARK: - viewDidLoad()
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // calls the method that decodes the plist file from documents
-        loadItems()
-        
+    
     }
     /// /// ///
     
@@ -126,6 +132,9 @@ class TodoListVC: UITableViewController {
             let newItem = Item(context: self.contextState)
             newItem.title = textField.text!
             newItem.done = false
+            // we set the parent category with the index of the current category
+            // we have access to the parent category from the relationships we set on the dataModel
+            newItem.parentCategory = self.selectedCategory
             self.itemArray.append(newItem)
             // call method that creates and saves itemArray on the plist
             self.saveItems()
@@ -168,10 +177,30 @@ class TodoListVC: UITableViewController {
     // we pass the request arg so we can re-use
     // we also provide a default in case we call loadItems() but dont pass an arg
     // like we do at the viewDidLoad() method
-    func loadItems(request: NSFetchRequest<Item> = Item.fetchRequest()) {
+    // we also pass a parameter for the predicate, we give a default of nil
+    // and also make it an optional
+    // because we call loadItems with diferent or no predicates at times
+    func loadItems(request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil) {
         // make a fetch request with a fetch call
         // from context so we can read the data
         // passing the rquest we created above
+        
+        // set a predicate to tell that every time we tap into a category
+        // we want to load only item created with the index of that category
+        // as a value for the parentCategory attribute
+        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+        
+        // if predicate arg is passed set it inside the compoundPredicate
+        // with the categoryPredicate
+        if let additionalPredicate = predicate {
+            /// compoundPredicate
+            // something like Redux compose
+            // A specialized predicate that evaluates logical combinations of other predicates.
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
+        } else {
+            // else use only the categoryPredicate
+            request.predicate = categoryPredicate
+        }
         
         do {
             // the fetch call return an array of objects
@@ -213,7 +242,7 @@ extension TodoListVC: UISearchBarDelegate {
         request.sortDescriptors = [sortDescriptor]
         
         // call function that makes the actual request
-        loadItems(request: request)
+        loadItems(request: request, predicate: myPredicate)
     }
     
     
