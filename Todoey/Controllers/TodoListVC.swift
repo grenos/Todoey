@@ -25,17 +25,6 @@ class TodoListVC: UITableViewController {
     }
     
     
-    // CORE DATA
-    // we grab a reference of the persistentContainer's context
-    // where we save the data (think redux store/state)
-    // CONTEXT is like an action/reducer -->
-    // pass the information of what we want to change -->
-    // to the database(persistentContainer)
-    let contextState = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-
-    
-    
-
     /// viewDidLoad()
     //MARK: - viewDidLoad()
     override func viewDidLoad() {

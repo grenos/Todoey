@@ -21,17 +21,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
          /// THIS GETS CALLED WHEN EVER THE APP IS FIRST LOADED UP
         // Override point for customization after application launch.
         
-        
-        let data = Data()
-        data.name = "Vas"
-        data.age = 76
-        
-        let realm = try! Realm()
-        try! realm.write {
-            realm.add(data)
+        do {
+            let realm = try Realm()
+        } catch {
+            print("Error initialising Realm \(error)")
         }
-        
+       
     
+        
         return true
     }
 

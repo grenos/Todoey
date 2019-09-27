@@ -7,15 +7,14 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 
 class CategoryVC: UITableViewController {
     
-    // init a new array with type Category Class from CoreData
-    var CategoryArray = [Category]()
-    // get a reference of the context
-    let contextState = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    let realm = try! Realm()
     
+    var CategoryArray: Results<Category>?
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,15 +29,16 @@ class CategoryVC: UITableViewController {
     //MARK: - Tableview Datasource Methods
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // set rows of table to length of array
-        return CategoryArray.count
+        // nil coalasing operator
+        
+        return CategoryArray?.count ?? 1
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // make cells reusable
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
         // set cell's textlabel equal to what the user has entered as an input in the alert
-        cell.textLabel?.text = CategoryArray[indexPath.row].name
+        cell.textLabel?.text = CategoryArray?[indexPath.row].name ?? "No categories found"
         return cell
     }
     /// /// ///
@@ -65,7 +65,7 @@ class CategoryVC: UITableViewController {
         if let activeIndex = tableView.indexPathForSelectedRow {
             // set the value of selectedCategory declared on TodoListVC
             // with the index of the tapped cell/row
-            destinationVC.selectedCategory = CategoryArray[activeIndex.row]
+            destinationVC.selectedCategory = CategoryArray?[activeIndex.row]
         }
     }
     /// /// ///
@@ -76,10 +76,11 @@ class CategoryVC: UITableViewController {
 
     /// TableView Manipulation Methods
     //MARK: - TableView Manipulation Methods
-    func saveCategories() {
-        // save context
+    func saveCategories(category: Category) {
         do {
-            try contextState.save()
+            try realm.write {
+                realm.add(category)
+            }
         } catch {
             print("Error saving in context: \(error)")
         }
@@ -89,16 +90,7 @@ class CategoryVC: UITableViewController {
     }
     
     func loadCategories() {
-        // declare the fetch request that we'll do on context
-        let request : NSFetchRequest<Category> = Category.fetchRequest()
-        
-        // make the fetch request with the above declared let as a query
-        do{
-            CategoryArray = try contextState.fetch(request)
-        } catch {
-            print("Error fetching from context: \(error)")
-        }
-        // reload tableView to get new changes on screen
+        CategoryArray = realm.objects(Category.self)
         tableView.reloadData()
     }
     /// /// ///
@@ -119,13 +111,11 @@ class CategoryVC: UITableViewController {
         let action = UIAlertAction(title: "Add", style: .default) { (action) in
             
             // create an object from the Category Class from context
-            let newCategory = Category(context: self.contextState)
+            let newCategory = Category()
             // set its name property equal to the user's input
             newCategory.name = textFiled.text!
-            // push the object to our array
-            self.CategoryArray.append(newCategory)
             // call the function that saves the array into context
-            self.saveCategories()
+            self.saveCategories(category: newCategory)
 
         }
         
